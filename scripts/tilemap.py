@@ -30,10 +30,10 @@ class Tilemap:
                 rects.append(pygame.Rect(tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size))
         return rects
 
-    def render(self, surf):
+    def render(self, surf, offset=(0, 0)):
         for tile in self.offgrid_tile:
-            surf.blit(self.game.assets[tile['type']][tile['varient']], tile['pos'])
+            surf.blit(self.game.assets[tile['type']][tile['varient']], (tile['pos'][0] - offset[0], tile['pos'][1] - offset[1]))
         
         for loc in self.tilemap:
             tile = self.tilemap[loc]
-            surf.blit(self.game.assets[tile['type']][tile['varient']], (tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size))
+            surf.blit(self.game.assets[tile['type']][tile['varient']], (tile['pos'][0] * self.tile_size - offset[0], tile['pos'][1] * self.tile_size - offset[1]))
