@@ -53,8 +53,6 @@ class Editor:
             self.tilemap.render(self.display, offset=render_scroll)
 
             mpos = pygame.mouse.get_pos()
-            # mpos[0] = int(mpos[0] / 2)
-            # mpos[1] = int(mpos[1] / 2)
             mpos = (mpos[0] / RENDER_SCALE, mpos[1] / RENDER_SCALE)
             tile_pos = (int((mpos[0] + self.scroll[0]) // self.tilemap.tile_size), int((mpos[1] + self.scroll[1]) // self.tilemap.tile_size))
 
@@ -119,6 +117,8 @@ class Editor:
                         self.movement[3] = True 
                     if event.key == pygame.K_g:
                         self.ongrid = not self.ongrid
+                    if event.key == pygame.K_t:
+                        self.tilemap.autotile()
                     if event.key == pygame.K_o:
                         self.tilemap.save('map.json')
                     if event.key == pygame.K_LSHIFT:
