@@ -37,6 +37,11 @@ class Game:
         self.player = Player(self, (50, 50), (8, 15))
         self.tilemap = Tilemap(self, tile_size=16)
         self.tilemap.load('map.json')
+
+        self.leaf_spawners = []
+        for tree in self.tilemap.extract([('large_decor', 2)], keep=True):
+            self.leaf_spawners.append(pygame.Rect(4 + tree['pos'][0], 4 + tree['pos'][1], 23, 13))
+
         self.scroll = [0, 0]  # the camera thing (to be added to everything that renders)
 
     def run(self):
