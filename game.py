@@ -30,6 +30,7 @@ class Game:
             'player/run': Animation(load_images('entities/player/run'), img_dur=4),
             'player/slide': Animation(load_images('entities/player/slide')),
             'player/wall_slide': Animation(load_images('entities/player/wall_slide')),
+            
         }
 
         self. clouds = Clouds(self.assets['clouds'], count=16)
