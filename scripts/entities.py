@@ -13,6 +13,7 @@ class PhysicsEntity:
         self.anim_offset = (-3, -3)
         self.flip = False
         self.set_action('idle')
+        self.last_movement = [0, 0]
     
     def set_action(self, action):
         if action != self.action:
@@ -55,6 +56,8 @@ class PhysicsEntity:
         if movement[0] < 0:
             self.flip = True
 
+        self.last_movement = movement
+
         self.velocity[1] = min(5, self.velocity[1] + 0.1)
         if self.collisions['top'] or self.collisions['bottom']:
             self.velocity[1] = 0
@@ -69,16 +72,57 @@ class Player(PhysicsEntity):
     def __init__(self, game, pos, size):
         super().__init__(game, 'player', pos, size)
         self.air_time = 0
+        self.jumps = 1
+        self.wall_slide = False
+    
+    def jump(self):
+        if self.wall_slide:
+            if self.flip and self.last_movement[0] < 0:
+                self.velocity[0] = 3.5
+                self.velocity[1] = -2.5
+                self.air_time = 5
+                self.jumps = max(0, self.jumps - 1)
+                return True
+            
+            elif not self.flip and self.last_movement[0] > 0:
+                self.velocity[0] = -3.5
+                self.velocity[1] = -2.5
+                self.air_time = 5
+                self.jumps = max(0, self.jumps - 1)
+                return True
+
+        elif self.jumps:
+            self.jumps -= 1
+            self.velocity[1] = -3
+            self.air_time = 5
+            return True
     
     def update(self, tilemap, movement=(0, 0)):
         super().update(tilemap, movement=movement)
         self.air_time += 1
         if self.collisions['bottom']:
             self.air_time = 0
+            self.jumps = 1
         
-        if self.air_time > 4:
-            self.set_action('jump')
-        elif movement[0] != 0:
-            self.set_action('run')
+        self.wall_slide = False
+        if (self.collisions['right'] or self.collisions['left']) and self.air_time > 4:
+            self.wall_slide = True
+            self.velocity[1] = min(self.velocity[1], 0.5)
+            if self.collisions['right']:
+                self.flip = False
+            else:
+                self.flip = True
+            self.set_action('wall_slide')
+        
+        if not self.wall_slide:
+            if self.air_time > 4:
+                self.set_action('jump')
+            elif movement[0] != 0:
+                self.set_action('run')
+            else:
+                self.set_action('idle')
+
+        if self.velocity[0] > 0:
+            self.velocity[0] = max(self.velocity[0] - 0.1, 0)
         else:
-            self.set_action('idle')
+            self.velocity[0] = min(self.velocity[0] + 0.1, 0)
